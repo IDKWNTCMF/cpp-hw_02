@@ -2,52 +2,44 @@
 
 #include <map>
 #include <vector>
+#include <memory>
+#include <iostream>
 
 namespace huffman {
 
-    class TreeNode {
-    public:
+    struct TreeNode {
         int val = 0;
         char ch = 0;
-        TreeNode *left = nullptr, *right = nullptr;
+        std::unique_ptr<TreeNode> left, right;
 
         TreeNode() = default;
         explicit TreeNode(char chr, int cnt) : val(cnt), ch(chr) {}
-        TreeNode(TreeNode *l, TreeNode *r) : val(l->val + r->val), left(l), right(r) {}
-        ~TreeNode() {
-            delete left;
-            delete right;
-        }
+        TreeNode(std::unique_ptr<TreeNode> &l, std::unique_ptr<TreeNode> &r) : val(l->val + r->val), left(std::move(l)), right(std::move(r)) {}
     };
 
     class HuffTree {
     private:
-        std::map<char, int> chars;
-        TreeNode *root = nullptr;
+        int size = 0;
+        std::vector<int> chars;
+        std::unique_ptr<TreeNode> root;
     public:
         HuffTree() = default;
-        explicit HuffTree(const std::map<char, int> &freq);
-        ~HuffTree() {
-            delete root;
-        }
+        explicit HuffTree(const std::vector<int> &freq);
 
-        void archive(std::ofstream &out);
-        int decode(std::ifstream &in, std::ofstream &out, int cnt);
+        void archive(std::ofstream &out) const;
+        int decode(std::ifstream &in, std::ofstream &out, int cnt) const;
 
         TreeNode * get_root() const {
-            return root;
+            return root.get();
         }
     };
 
     class HuffmanArchiver {
     private:
-        HuffTree *tree = nullptr;
-        std::map<char, std::vector<bool> > table;
+        std::unique_ptr<HuffTree> tree;
+        std::vector<std::vector<bool>> table;
     public:
         HuffmanArchiver() = default;
-        ~HuffmanArchiver() {
-            delete tree;
-        }
 
         void build_table(TreeNode *root, std::vector<bool> &cur_code);
         int zip(std::ifstream &in, std::ofstream &out);
