@@ -79,7 +79,7 @@ TEST_CASE("huffman archiver tests") {
     }
 
     SUBCASE("zip and unzip file with only one symbol") {
-        std::string one_symbol_file = "data/one_symbol_file.txt";
+        std::string one_symbol_file = "data/OneSymbolFile.txt";
         std::ifstream in(one_symbol_file);
         std::ofstream out(zipped);
         int val1 = archiver.zip(in, out);
