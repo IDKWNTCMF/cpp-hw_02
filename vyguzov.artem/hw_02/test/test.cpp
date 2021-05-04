@@ -125,4 +125,20 @@ TEST_CASE("huffman archiver tests") {
         CHECK(check_files(bin_file, unzipped));
         CHECK_EQ(val1, val2);
     }
+
+    SUBCASE("zip and unzip a file with every char") {
+        std::string bin_file = "data/EveryChar.bin";
+        std::ifstream in(bin_file);
+        std::ofstream out(zipped);
+        int val1 = archiver.zip(in, out);
+        in.close();
+        out.close();
+        std::ifstream fin(zipped);
+        std::ofstream fout(unzipped);
+        int val2 = dearchiver.unzip(fin, fout);
+        fin.close();
+        fout.close();
+        CHECK(check_files(bin_file, unzipped));
+        CHECK_EQ(val1, val2);
+    }
 }
