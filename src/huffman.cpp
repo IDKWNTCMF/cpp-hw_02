@@ -5,11 +5,11 @@
 
 namespace huffman {
 
-    static int get_index_of_min_element(const std::vector<std::unique_ptr<TreeNode>> &nodes) {
-        return std::distance(nodes.begin(),
-                             std::min_element(nodes.begin(),
-                                              nodes.end(),
-                                              [](const std::unique_ptr<TreeNode> &a, const std::unique_ptr<TreeNode> &b) { return a->val <= b->val; }));
+    static void swap_min_with_last(std::vector<std::unique_ptr<TreeNode>> &nodes) {
+        std::iter_swap(nodes.end() - 1,
+                       std::min_element(nodes.begin(),
+                                        nodes.end(),
+                                        [](const std::unique_ptr<TreeNode> &a, const std::unique_ptr<TreeNode> &b) { return a->val <= b->val; }));
     }
 
     HuffTree::HuffTree(const std::vector<int> &freq) {
@@ -23,15 +23,11 @@ namespace huffman {
             }
         }
 
-        size_t cur_size = nodes.size();
-        while (cur_size > 1) {
-            int idx = get_index_of_min_element(nodes);
-            std::swap(nodes[idx], nodes[cur_size - 1]);
+        while (nodes.size() > 1) {
+            swap_min_with_last(nodes);
             std::unique_ptr<TreeNode> min1 = std::move(nodes.back());
             nodes.pop_back();
-            cur_size--;
-            idx = get_index_of_min_element(nodes);
-            std::swap(nodes[idx], nodes[cur_size - 1]);
+            swap_min_with_last(nodes);
             std::unique_ptr<TreeNode> min2 = std::move(nodes.back());
             nodes.pop_back();
             nodes.push_back(std::make_unique<TreeNode>(min1, min2));
