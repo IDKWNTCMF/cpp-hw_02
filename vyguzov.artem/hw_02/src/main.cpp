@@ -17,22 +17,23 @@ static int parse_arguments(int argc, char *argv[], std::ifstream &in, std::ofstr
     int mode = 0;
     std::string IFile, OFile;
     for (int i = 1; i < argc; i++) {
-        if (strlen(argv[i]) == 1) throw std::invalid_argument("Invalid arguments!");
-        if (argv[i][0] == '-' && argv[i][1] == '-') {
-            if (strcmp(argv[i], "--file") == 0) {
+        std::string_view str(argv[i]);
+        if (str.size() == 1) throw std::invalid_argument("Invalid arguments!");
+        if (str[0] == '-' && str[1] == '-') {
+            if (str ==  "--file") {
                 if (++i == argc || !IFile.empty()) throw std::invalid_argument("Invalid arguments!");
                 IFile = argv[i];
                 continue;
             }
-            if (strcmp(argv[i], "--output") == 0) {
+            if (str == "--output") {
                 if (++i == argc || !OFile.empty()) throw std::invalid_argument("Invalid arguments!");
                 OFile = argv[i];
                 continue;
             }
             throw std::invalid_argument("Invalid arguments!");
         }
-        if (argv[i][0] == '-') {
-            switch (argv[i][1]) {
+        if (str[0] == '-') {
+            switch (str[1]) {
                 case 'c':
                     if (mode != 0) throw std::invalid_argument("Invalid arguments!");
                     mode = 1;
@@ -69,17 +70,10 @@ int main(int argc, char *argv[]) {
         std::ofstream out;
         int mode = parse_arguments(argc, argv, in, out);
         huffman::HuffmanArchiver archiver;
-        int additionalData = (mode == 1) ? archiver.zip(in, out) : archiver.unzip(in, out);
-        int inputData = in.tellg(), outputData = out.tellp();
-        if (mode == 1) {
-            std::cout << inputData << '\n';
-            std::cout << outputData - additionalData << '\n';
-            std::cout << additionalData << '\n';
-        } else {
-            std::cout << inputData - additionalData << '\n';
-            std::cout << outputData << '\n';
-            std::cout << additionalData << '\n';
-        }
+        huffman::StatHandler statistics = (mode == 1) ? archiver.zip(in, out) : archiver.unzip(in, out);
+        std::cout << statistics.inputData << '\n';
+        std::cout << statistics.outputData << '\n';
+        std::cout << statistics.additionalData << '\n';
     } catch (std::invalid_argument &e) {
         std::cout << e.what() << '\n';
         return 1;
@@ -95,3 +89,4 @@ int main(int argc, char *argv[]) {
     }
     return 0;
 }
+

@@ -66,79 +66,89 @@ TEST_CASE("huffman archiver tests") {
         std::string empty_file = "data/empty.txt";
         std::ifstream in(empty_file);
         std::ofstream out(zipped);
-        int val1 = archiver.zip(in, out);
+        huffman::StatHandler stats1 = archiver.zip(in, out);
         in.close();
         out.close();
         std::ifstream fin(zipped);
         std::ofstream fout(unzipped);
-        int val2 = dearchiver.unzip(fin, fout);
+        huffman::StatHandler stats2 = dearchiver.unzip(fin, fout);
         fin.close();
         fout.close();
         CHECK(check_files(empty_file, unzipped));
-        CHECK_EQ(val1, val2);
+        CHECK_EQ(stats1.inputData, stats2.outputData);
+        CHECK_EQ(stats1.outputData, stats2.inputData);
+        CHECK_EQ(stats1.additionalData, stats2.additionalData);
     }
 
     SUBCASE("zip and unzip file with only one symbol") {
         std::string one_symbol_file = "data/OneSymbolFile.txt";
         std::ifstream in(one_symbol_file);
         std::ofstream out(zipped);
-        int val1 = archiver.zip(in, out);
+        huffman::StatHandler stats1 = archiver.zip(in, out);
         in.close();
         out.close();
         std::ifstream fin(zipped);
         std::ofstream fout(unzipped);
-        int val2 = dearchiver.unzip(fin, fout);
+        huffman::StatHandler stats2 = dearchiver.unzip(fin, fout);
         fin.close();
         fout.close();
         CHECK(check_files(one_symbol_file, unzipped));
-        CHECK_EQ(val1, val2);
+        CHECK_EQ(stats1.inputData, stats2.outputData);
+        CHECK_EQ(stats1.outputData, stats2.inputData);
+        CHECK_EQ(stats1.additionalData, stats2.additionalData);
     }
 
     SUBCASE("zip and unzip an ordinary file") {
         std::string ordinary_file = "data/AStudyInScarlet.txt";
         std::ifstream in(ordinary_file);
         std::ofstream out(zipped);
-        int val1 = archiver.zip(in, out);
+        huffman::StatHandler stats1 = archiver.zip(in, out);
         in.close();
         out.close();
         std::ifstream fin(zipped);
         std::ofstream fout(unzipped);
-        int val2 = dearchiver.unzip(fin, fout);
+        huffman::StatHandler stats2 = dearchiver.unzip(fin, fout);
         fin.close();
         fout.close();
         CHECK(check_files(ordinary_file, unzipped));
-        CHECK_EQ(val1, val2);
+        CHECK_EQ(stats1.inputData, stats2.outputData);
+        CHECK_EQ(stats1.outputData, stats2.inputData);
+        CHECK_EQ(stats1.additionalData, stats2.additionalData);
     }
 
     SUBCASE("zip and unzip a bin file") {
         std::string bin_file = "data/file.bin";
         std::ifstream in(bin_file);
         std::ofstream out(zipped);
-        int val1 = archiver.zip(in, out);
+        huffman::StatHandler stats1 = archiver.zip(in, out);
         in.close();
         out.close();
         std::ifstream fin(zipped);
         std::ofstream fout(unzipped);
-        int val2 = dearchiver.unzip(fin, fout);
+        huffman::StatHandler stats2 = dearchiver.unzip(fin, fout);
         fin.close();
         fout.close();
         CHECK(check_files(bin_file, unzipped));
-        CHECK_EQ(val1, val2);
+        CHECK_EQ(stats1.inputData, stats2.outputData);
+        CHECK_EQ(stats1.outputData, stats2.inputData);
+        CHECK_EQ(stats1.additionalData, stats2.additionalData);
     }
 
     SUBCASE("zip and unzip a file with every char") {
         std::string bin_file = "data/EveryChar.bin";
         std::ifstream in(bin_file);
         std::ofstream out(zipped);
-        int val1 = archiver.zip(in, out);
+        huffman::StatHandler stats1 = archiver.zip(in, out);
         in.close();
         out.close();
         std::ifstream fin(zipped);
         std::ofstream fout(unzipped);
-        int val2 = dearchiver.unzip(fin, fout);
+        huffman::StatHandler stats2 = dearchiver.unzip(fin, fout);
         fin.close();
         fout.close();
         CHECK(check_files(bin_file, unzipped));
-        CHECK_EQ(val1, val2);
+        CHECK_EQ(stats1.inputData, stats2.outputData);
+        CHECK_EQ(stats1.outputData, stats2.inputData);
+        CHECK_EQ(stats1.additionalData, stats2.additionalData);
     }
 }

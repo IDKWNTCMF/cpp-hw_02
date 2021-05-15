@@ -36,10 +36,11 @@ namespace huffman {
         root = (nodes.empty()) ? nullptr : std::move(nodes[0]);
     }
 
-    int HuffTree::decode(std::ifstream &in, std::ofstream &out, int cnt) const {
-        int additionalData = in.tellg();
+    StatHandler HuffTree::decode(std::ifstream &in, std::ofstream &out, int cnt) const {
+        StatHandler statistics;
+        statistics.additionalData = in.tellg();
         TreeNode *cur = root.get();
-        if (cur == nullptr) return additionalData;
+        if (cur == nullptr) return statistics;
         if (cur->left == nullptr) {
             while (cnt != 0) {
                 out.write((char *)&cur->ch, sizeof(char));
@@ -58,7 +59,10 @@ namespace huffman {
                 }
             }
         }
-        return additionalData;
+        statistics.inputData = in.tellg();
+        statistics.outputData = out.tellp();
+        statistics.inputData -= statistics.additionalData;
+        return statistics;
     }
 
     void HuffTree::archive(std::ofstream &out) const {
@@ -84,7 +88,8 @@ namespace huffman {
         cur_code.pop_back();
     }
 
-    int HuffmanArchiver::zip(std::ifstream &in, std::ofstream &out) {
+    StatHandler HuffmanArchiver::zip(std::ifstream &in, std::ofstream &out) {
+        StatHandler statistics;
         std::vector<int> freq(1 << CHAR_BIT);
         uint8_t ch;
         in.seekg(0, std::ifstream::end);
@@ -96,7 +101,7 @@ namespace huffman {
         }
         tree = std::make_unique<HuffTree>(freq);
         tree->archive(out);
-        int additionalData = out.tellp();
+        statistics.additionalData = out.tellp();
 
         in.seekg(0, std::ifstream::beg);
         TreeNode *cur = tree->get_root();
@@ -127,10 +132,13 @@ namespace huffman {
             flag = true;
         }
         if (flag) out.write((char *)&tmp, sizeof(uint8_t));
-        return additionalData;
+        statistics.inputData = in.tellg();
+        statistics.outputData = out.tellp();
+        statistics.outputData -= statistics.additionalData;
+        return statistics;
     }
 
-    int HuffmanArchiver::unzip(std::ifstream &in, std::ofstream &out) {
+    StatHandler HuffmanArchiver::unzip(std::ifstream &in, std::ofstream &out) {
         uint16_t size;
         in.read((char *)&size, sizeof(uint16_t));
         std::vector<int> freq(1 << CHAR_BIT);

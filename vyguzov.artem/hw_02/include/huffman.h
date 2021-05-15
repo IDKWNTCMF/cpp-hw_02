@@ -7,6 +7,10 @@
 
 namespace huffman {
 
+    struct StatHandler {
+        int inputData = 0, outputData = 0, additionalData = 0;
+    };
+
     struct TreeNode {
         int val = 0;
         char ch = 0;
@@ -27,7 +31,7 @@ namespace huffman {
         explicit HuffTree(const std::vector<int> &freq);
 
         void archive(std::ofstream &out) const;
-        int decode(std::ifstream &in, std::ofstream &out, int cnt) const;
+        StatHandler decode(std::ifstream &in, std::ofstream &out, int cnt) const;
 
         TreeNode * get_root() const {
             return root.get();
@@ -42,8 +46,8 @@ namespace huffman {
         HuffmanArchiver() = default;
 
         void build_table(TreeNode *root, std::vector<bool> &cur_code);
-        int zip(std::ifstream &in, std::ofstream &out);
-        int unzip(std::ifstream &in, std::ofstream &out);
+        StatHandler zip(std::ifstream &in, std::ofstream &out);
+        StatHandler unzip(std::ifstream &in, std::ofstream &out);
     };
 
 }
